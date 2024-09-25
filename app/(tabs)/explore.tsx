@@ -1,10 +1,12 @@
-import { StyleSheet, View, Text } from "react-native";
+import ThemeText from "@/components/ThemeText";
+import ThemeView from "@/components/ThemeView";
+import { StyleSheet } from "react-native";
 
 export default function ExploreScreen() {
   return (
-    <View style={styles.container}>
-      <Text>Explore Screen</Text>
-    </View>
+    <ThemeView>
+      <ThemeText>Explore Screen</ThemeText>
+    </ThemeView>
   );
 }
 
