@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  Touchable,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import React from "react";
 interface ThemeButtonProps {
   title: string;
@@ -25,6 +19,5 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "ghostwhite",
     padding: 10,
-    // borderRadius: 10,
   },
 });

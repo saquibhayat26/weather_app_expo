@@ -30,7 +30,11 @@ const ThemeView = ({ children, style, isLoading }: ThemeViewProps) => {
         />
         <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="handled">
           {isLoading ? (
-            <ActivityIndicator size="large" color="#bbbbc4" />
+            <ActivityIndicator
+              testID="loading-indicator"
+              size="large"
+              color="#bbbbc4"
+            />
           ) : (
             children
           )}
