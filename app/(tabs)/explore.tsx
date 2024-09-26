@@ -20,8 +20,9 @@ const ExploreScreen = () => {
           <Ionicons name="cloudy-night" size={50} color="#fff" />
           <Text style={styles.sectionTitle}>Accurate Forecasts</Text>
           <Text style={styles.sectionContent}>
-            Know what’s coming with our 7-day weather forecast. Plan your week
-            ahead with ease.
+            {/* every three hours forecast for next 18 hours */}
+            Get accurate weather forecasts for the next 18 hours, every three
+            hours.
           </Text>
         </View>
 

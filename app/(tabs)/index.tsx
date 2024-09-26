@@ -59,7 +59,7 @@ export default function HomeScreen() {
         min: `${(item.main.temp_min - 273.15).toFixed(1)} °C`,
         max: `${(item.main.temp_max - 273.15).toFixed(1)} °C`,
         feelsLike: `${(item.main.feels_like - 273.15).toFixed(1)} °C`,
-        date: dayjs(item.dt_txt).format("ddd, MMM D"),
+        date: dayjs(item.dt_txt).format("ddd, MMM D, HH:mm"),
       }));
       setTemperatureData(forecastData);
     } catch (error: unknown) {
@@ -102,25 +102,26 @@ export default function HomeScreen() {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
+        alignContent: "center",
         height: windowHeight,
       }}
     >
-      <View
-        style={[
-          styles.inputContainer,
-          {
-            width: windowWidth,
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-          },
-        ]}
-      >
-        <LocationTextInput
-          onLocationSet={setLocationBySearch}
-          handleSearchLocation={handleSearchLocation}
-        />
-        <ThemeButton title="Search" onPress={handleSearchLocation} />
+      <View style={styles.inputContainerP}>
+        <View
+          style={[
+            styles.inputContainer,
+            {
+              width: "80%",
+              flexDirection: "row",
+            },
+          ]}
+        >
+          <LocationTextInput
+            onLocationSet={setLocationBySearch}
+            handleSearchLocation={handleSearchLocation}
+          />
+          <ThemeButton title="Search" onPress={handleSearchLocation} />
+        </View>
       </View>
 
       <View style={[{ height: windowHeight * 0.8 }]}>
@@ -169,14 +170,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  inputContainer: {
+  inputContainerP: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 40,
+    marginBottom: 10,
+    backgroundColor: "transparent",
+  },
+
+  inputContainer: {
     borderColor: "ghostwhite",
     borderWidth: 0.5,
     paddingLeft: 10,
     borderRadius: 2,
-    marginBottom: 10,
-    backgroundColor: "transparent",
   },
 
   location: {

@@ -28,7 +28,11 @@ const ThemeView = ({ children, style, isLoading }: ThemeViewProps) => {
             backgroundColor: "rgba(0, 0, 0, 0.4)",
           }}
         />
-        <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          style={{ flex: 1 }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
           {isLoading ? (
             <ActivityIndicator
               testID="loading-indicator"
@@ -49,11 +53,11 @@ export default ThemeView;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    // alignItems: "center",
+    // justifyContent: "center",
     backgroundColor: "#fff",
     resizeMode: "cover",
-    width: Dimensions.get("window").width,
+    // width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
   },
 });
