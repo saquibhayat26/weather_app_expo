@@ -3,10 +3,8 @@ import {
   Dimensions,
   ImageBackground,
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 import React from "react";
@@ -14,7 +12,7 @@ import React from "react";
 interface ThemeViewProps {
   children: React.ReactNode;
   style?: {};
-  isLoading: boolean;
+  isLoading?: boolean;
 }
 
 const ThemeView = ({ children, style, isLoading }: ThemeViewProps) => {

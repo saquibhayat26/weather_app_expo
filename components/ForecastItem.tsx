@@ -1,6 +1,4 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
-import dayjs from "dayjs";
 import { BlurView } from "expo-blur";
 
 const ForecastItem = ({
@@ -42,6 +40,7 @@ const styles = StyleSheet.create({
     fontFamily: "SpaceMono",
     textAlign: "left",
   },
+
   date: {
     fontSize: 12,
     color: "#fff",
