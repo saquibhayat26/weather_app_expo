@@ -106,7 +106,7 @@ export default function HomeScreen() {
         height: windowHeight,
       }}
     >
-      <View style={styles.inputContainerP}>
+      <View style={[styles.inputContainerP, { width: windowWidth }]}>
         <View
           style={[
             styles.inputContainer,
@@ -171,7 +171,6 @@ const styles = StyleSheet.create({
   },
 
   inputContainerP: {
-    width: "100%",
     justifyContent: "center",
     alignItems: "center",
     marginTop: 40,
