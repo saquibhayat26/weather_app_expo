@@ -4,10 +4,15 @@ import * as Location from "expo-location";
 
 interface LocationInputProps extends TextInputProps {
   onLocationSet: (location: { lat: number; lon: number }) => void;
+  handleSearchLocation: () => void;
 }
 
-const LocationTextInput = ({ onLocationSet, ...props }: LocationInputProps) => {
-  const handleEndEditing = async (text: string) => {
+const LocationTextInput = ({
+  onLocationSet,
+  handleSearchLocation,
+  ...props
+}: LocationInputProps) => {
+  const handleInputChnage = async (text: string) => {
     try {
       const res = await Location.geocodeAsync(text);
       if (res.length > 0) {
@@ -27,7 +32,8 @@ const LocationTextInput = ({ onLocationSet, ...props }: LocationInputProps) => {
       placeholder="Please enter a location"
       cursorColor={"ghostwhite"}
       placeholderTextColor={"ghostwhite"}
-      onChange={(e) => handleEndEditing(e.nativeEvent.text)}
+      onChange={(e) => handleInputChnage(e.nativeEvent.text)}
+      onEndEditing={handleSearchLocation}
       {...props}
     />
   );

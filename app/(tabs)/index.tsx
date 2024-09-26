@@ -19,8 +19,8 @@ import night from "@/assets/lottie/night.json";
 import { Coordinates, WeatherResponse } from "@/types/WeatherResponse";
 import { WeatherForecastResponse } from "@/types/WeatherForecast";
 
-const apiKey = process.env.WEATHER_API_KEY;
-const baseUrl = "https://api.openweathermap.org/data/2.5";
+const apiKey = process.env["EXPO_PUBLIC_WEATHER_API_KEY"]; // please use your own api key
+const baseUrl = process.env["EXPO_PUBLIC_WEATHER_API_BASE_URL"]; //https://api.openweathermap.org/data/2.5
 
 export default function HomeScreen() {
   const windowWidth = useWindowDimensions().width;
@@ -116,7 +116,10 @@ export default function HomeScreen() {
           },
         ]}
       >
-        <LocationTextInput onLocationSet={setLocationBySearch} />
+        <LocationTextInput
+          onLocationSet={setLocationBySearch}
+          handleSearchLocation={handleSearchLocation}
+        />
         <ThemeButton title="Search" onPress={handleSearchLocation} />
       </View>
 
