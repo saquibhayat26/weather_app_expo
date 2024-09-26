@@ -23,7 +23,7 @@ import night from "@/assets/lottie/night.json";
 import { Coordinates, WeatherResponse } from "@/types/WeatherTypes";
 import { WeatherForecastResponse } from "@/types/WeatherForecast";
 
-const apiKey = "b1c41606b5d6aba1a270ea04f6199f50";
+const apiKey = process.env.WEATHER_API_KEY;
 const baseUrl = "https://api.openweathermap.org/data/2.5";
 
 export default function HomeScreen() {
