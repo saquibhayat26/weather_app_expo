@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FlatList, StyleSheet, useWindowDimensions, View } from "react-native";
-import * as Location from "expo-location";
 import LottieView from "lottie-react-native";
 import dayjs from "dayjs";
 
@@ -11,16 +10,13 @@ import ThemeButton from "@/components/ThemeButton";
 import LocationTextInput from "@/components/LocationTextInput";
 
 import { LocationContext } from "@/context/LocationContext";
-import { useLocationPermission } from "@/hooks/useLocationPermission";
 
 import rain from "@/assets/lottie/rainy.json";
 import day from "@/assets/lottie/day.json";
 import cloud from "@/assets/lottie/cloud.json";
 import night from "@/assets/lottie/night.json";
-// import cloudyDay from "@/assets/lottie/cloudy_day.json";
-// import cloudyNight from "@/assets/lottie/cloudy_night.json";
 
-import { Coordinates, WeatherResponse } from "@/types/WeatherTypes";
+import { Coordinates, WeatherResponse } from "@/types/WeatherResponse";
 import { WeatherForecastResponse } from "@/types/WeatherForecast";
 
 const apiKey = process.env.WEATHER_API_KEY;
@@ -29,94 +25,75 @@ const baseUrl = "https://api.openweathermap.org/data/2.5";
 export default function HomeScreen() {
   const windowWidth = useWindowDimensions().width;
   const windowHeight = useWindowDimensions().height;
-
-  const [location, setLocation] = useState<Coordinates | null>(null);
   const [locationBySearch, setLocationBySearch] = useState<Coordinates | null>(
     null
   );
 
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [weatherData, setWeatherData] = useState<WeatherResponse | null>(null);
   const [temperatureData, setTemperatureData] = useState<any>([]);
 
-  // const getLocation = useContext(LocationContext);
-  const { requestLocationPermission } = useLocationPermission();
+  const { errorMsg, location } = useContext(LocationContext);
 
-  const fetchForecastByLocation = async (coords: Coordinates) => {
+  const fetchWeatherData = async (coords: Coordinates) => {
     try {
       setIsLoading(true);
-      const url = `${baseUrl}/forecast?lat=${coords.lat}&lon=${coords.lon}&cnt=7&appid=${apiKey}`;
-      const response = await fetch(url);
+      const weatherUrl = `${baseUrl}/weather?lat=${coords.lat}&lon=${coords.lon}&appid=${apiKey}&units=metric`;
+      const forecastUrl = `${baseUrl}/forecast?lat=${coords.lat}&lon=${coords.lon}&cnt=7&appid=${apiKey}`;
 
-      if (!response.ok) {
-        setErrorMsg("Failed to fetch weather data");
-        return;
-      }
+      // Fetch weather data
+      const weatherResponse = await fetch(weatherUrl);
+      if (!weatherResponse.ok) throw new Error("Failed to fetch weather data");
+      const weatherJson: WeatherResponse = await weatherResponse.json();
+      setWeatherData(weatherJson);
 
-      const json: WeatherForecastResponse = await response.json();
+      // Fetch forecast data
+      const forecastResponse = await fetch(forecastUrl);
+      if (!forecastResponse.ok)
+        throw new Error("Failed to fetch forecast data");
+      const forecastJson: WeatherForecastResponse =
+        await forecastResponse.json();
 
-      const temperatureData = json.list.map((item) => ({
-        min: `${(item.main.temp_min - 273.15).toFixed(1)} °C`, // Convert Kelvin to Celsius
-        max: `${(item.main.temp_max - 273.15).toFixed(1)} °C`, // Convert Kelvin to Celsius
-        feelsLike: `${(item.main.feels_like - 273.15).toFixed(1)} °C`, // Convert Kelvin to Celsius
-        date: dayjs(item.dt_txt).format("ddd, MMM D"), // Format date with day
+      const forecastData = forecastJson.list.map((item) => ({
+        min: `${(item.main.temp_min - 273.15).toFixed(1)} °C`,
+        max: `${(item.main.temp_max - 273.15).toFixed(1)} °C`,
+        feelsLike: `${(item.main.feels_like - 273.15).toFixed(1)} °C`,
+        date: dayjs(item.dt_txt).format("ddd, MMM D"),
       }));
-      setTemperatureData(temperatureData);
-    } catch (error) {
-      setErrorMsg("Error fetching weather data");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchWeatherByLocation = async (coords: Coordinates) => {
-    try {
-      setIsLoading(true);
-      const url = `${baseUrl}/weather?lat=${coords.lat}&lon=${coords.lon}&appid=${apiKey}&units=metric`;
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        setErrorMsg("Failed to fetch weather data");
-        return;
-      }
-
-      const json: WeatherResponse = await response.json();
-
-      if (json.cod === 200) {
-        setWeatherData(json);
+      setTemperatureData(forecastData);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
       } else {
-        setErrorMsg("Error in weather data response");
+        setError("An unknown error occurred");
       }
-    } catch (error) {
-      setErrorMsg("Error fetching weather data");
     } finally {
       setIsLoading(false);
     }
   };
-
   useEffect(() => {
     if (location) {
-      fetchWeatherByLocation(location);
-      fetchForecastByLocation(location);
-    }
-  }, [location]);
-
-  useEffect(() => {
-    (async () => {
-      const granted = await requestLocationPermission();
-      if (!granted) {
-        setErrorMsg("Permission to access location was denied" as any);
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({});
       const coords: Coordinates = {
         lat: location.coords.latitude,
         lon: location.coords.longitude,
       };
-      setLocation(coords);
-    })();
-  }, []);
+      fetchWeatherData(coords);
+    }
+  }, [location]);
+
+  const handleSearchLocation = () => {
+    if (locationBySearch) {
+      fetchWeatherData(locationBySearch);
+    }
+  };
+
+  const getLottieSource = (weatherMain: string) => {
+    if (weatherMain === "Rain") return rain;
+    if (weatherMain === "Clouds") return cloud;
+    if (weatherMain === "Clear") return day;
+    return night;
+  };
 
   return (
     <ThemeView
@@ -140,21 +117,17 @@ export default function HomeScreen() {
         ]}
       >
         <LocationTextInput onLocationSet={setLocationBySearch} />
-        <ThemeButton
-          title="Search"
-          onPress={() => {
-            if (locationBySearch) {
-              fetchWeatherByLocation(locationBySearch);
-              fetchForecastByLocation(locationBySearch);
-            }
-          }}
-        />
+        <ThemeButton title="Search" onPress={handleSearchLocation} />
       </View>
 
       <View style={[{ height: windowHeight * 0.8 }]}>
         {errorMsg ? (
           <View style={{ flex: 1, justifyContent: "center" }}>
             <ThemeText>{errorMsg}</ThemeText>
+          </View>
+        ) : error ? (
+          <View style={{ flex: 1, justifyContent: "center" }}>
+            <ThemeText>{error}</ThemeText>
           </View>
         ) : weatherData ? (
           <>
@@ -166,15 +139,7 @@ export default function HomeScreen() {
                   width: 200,
                   height: 200,
                 }}
-                source={
-                  weatherData.weather[0].main === "Rain"
-                    ? rain
-                    : weatherData.weather[0].main === "Clouds"
-                    ? cloud
-                    : weatherData.weather[0].main === "Clear"
-                    ? day
-                    : night
-                }
+                source={getLottieSource(weatherData.weather[0].main)}
               />
               <ThemeText style={styles.location}>{weatherData.name}</ThemeText>
               <ThemeText style={styles.temp}>
@@ -196,7 +161,6 @@ export default function HomeScreen() {
     </ThemeView>
   );
 }
-
 const styles = StyleSheet.create({
   textInput: {
     flex: 1,
